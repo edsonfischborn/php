@@ -1,0 +1,18 @@
+/* temporario */
+
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+section {
+  background-color: var(--color-background);
+  padding: 50px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px 1px rgba(97, 67, 67, 0.4);
+}
+
+section div {
+  margin-top: 10px;
+}
