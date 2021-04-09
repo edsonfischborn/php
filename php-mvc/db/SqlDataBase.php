@@ -1,188 +1,188 @@
 <?php
+
+/**
+ * Generic sql class
+ * Available without the modifications on http://www.devwilliam.com.br/php/crud-generico-com-php-e-pdo
+ * @author Édson Fischborn 
+ */
 class SqlDataBase{   
  
 	private $pdo = null;      
-	private $tabela = null;   
+	private $table = null;   
 	 
-	public function __construct($conexao, $tabela){   
-		$this->pdo = $conexao;  
-		$this->tabela = $tabela;
+	public function __construct($connection, $table){   
+		$this->pdo = $connection;  
+		$this->table = $table;
 	}   
 
-	private function buildSelect(array $fields, array $conditions){   
+	private function buildSelect(array $dataArray, array $conditionArray){   
 		$sql = "";   
-		$fieldsValue = "";   
-		$conditionsValue = "";   
+		$fields = "";   
+		$condValues = "";   
 			   
-		foreach($fields as $value){ 
-		  $fieldsValue .= $value . ', ';   
+		foreach($dataArray as $value){ 
+		  $fields .= $value . ', ';   
 		}
    
-		$fieldsValue = (substr($fieldsValue, -2) == ', ') ? trim(substr($fieldsValue, 0, (strlen($fieldsValue) - 2))) : $fieldsValue;  
+		$fields = (substr($fields, -2) == ', ') ? trim(substr($fields, 0, (strlen($fields) - 2))) : $fields;  
   
-		if(!empty($conditions)){
-		  foreach($conditions as $key => $value){
-			$conditionsValue .= $key . '=? AND ';   
+		if(!empty($conditionArray)){
+		  foreach($conditionArray as $key => $value){
+			$condValues .= $key . '=? AND ';   
 		  }
   
-		  $conditionsValue = (substr($conditionsValue, -4) == 'AND ') ? trim(substr($conditionsValue, 0, (strlen($conditionsValue) - 4))) : $conditionsValue;
-		  $sql .= "SELECT " . $fieldsValue . " FROM {$this->tabela} WHERE " . $conditionsValue;  
+		  $condValues = (substr($condValues, -4) == 'AND ') ? trim(substr($condValues, 0, (strlen($condValues) - 4))) : $condValues;
+		  $sql .= "SELECT " . $fields . " FROM {$this->table} WHERE " . $condValues;  
 		} else {
-		  $sql .= "SELECT " . $fieldsValue . " FROM {$this->tabela}"; 
+		  $sql .= "SELECT " . $fields . " FROM {$this->table}"; 
 		}
 		
 		return trim($sql);   
 	  } 
    
-	private function buildInsert($arrayDados){   
+	private function buildInsert(array $dataArray){   
 		$sql = "";   
-		$campos = "";   
-		$valores = "";   
+		$fields = "";   
+		$values = "";   
 			   
-		foreach($arrayDados as $chave => $valor){
-		   $campos .= $chave . ', ';   
-		   $valores .= '=?, ';   
+		foreach($dataArray as $key => $value){
+		   $fields .= $key . ', ';   
+		   $values .= '=?, ';   
 		}  
 			   
-		$campos = (substr($campos, -2) == ', ') ? trim(substr($campos, 0, (strlen($campos) - 2))) : $campos;    
-		$valores = (substr($valores, -2) == ', ') ? trim(substr($valores, 0, (strlen($valores) - 2))) : $valores ;    
+		$fields = (substr($fields, -2) == ', ') ? trim(substr($fields, 0, (strlen($fields) - 2))) : $fields;    
+		$values = (substr($values, -2) == ', ') ? trim(substr($values, 0, (strlen($values) - 2))) : $values ;    
 			    
-		$sql .= "INSERT INTO {$this->tabela} (" . $campos . ")VALUES(" . $valores . ")";   
+		$sql .= "INSERT INTO {$this->table} (" . $fields . ")VALUES(" . $values . ")";   
 			    
 		return trim($sql);   
 	}   
 	  
-	private function buildUpdate($arrayDados, $arrayCondicao){   
+	private function buildUpdate(array $dataArray, array $conditionArray){   
 		$sql = "";   
-		$valCampos = "";   
-		$valCondicao = "";   
+		$fields = "";   
+		$condValues = "";   
 			     
-		foreach($arrayDados as $chave => $valor){ 
-		   $valCampos .= $chave . '=?, ';   
+		foreach($dataArray as $key => $value){ 
+		   $fields .= $key . '=?, ';   
 		}
 			   
-		foreach($arrayCondicao as $chave => $valor){
-		   $valCondicao .= $chave . '=? AND ';   
+		foreach($conditionArray as $key => $value){
+		   $condValues .= $key . '=? AND ';   
 		}
 			   
-		$valCampos = (substr($valCampos, -2) == ', ') ? trim(substr($valCampos, 0, (strlen($valCampos) - 2))) : $valCampos;      
-		$valCondicao = (substr($valCondicao, -4) == 'AND ') ? trim(substr($valCondicao, 0, (strlen($valCondicao) - 4))) : $valCondicao;    
+		$fields = (substr($fields, -2) == ', ') ? trim(substr($fields, 0, (strlen($fields) - 2))) : $fields;      
+		$condValues = (substr($condValues, -4) == 'AND ') ? trim(substr($condValues, 0, (strlen($condValues) - 4))) : $condValues;    
 			     
-		$sql .= "UPDATE {$this->tabela} SET " . $valCampos . " WHERE " . $valCondicao;   
+		$sql .= "UPDATE {$this->table} SET " . $fields . " WHERE " . $condValues;   
 			   
 		return trim($sql);   
 	}   
 	
-	private function buildDelete($arrayCondicao){   
+	private function buildDelete(array $conditionArray){   
 		$sql = "";   
-		$valCampos= "";   
+		$condValues = "";   
 			 
-		foreach($arrayCondicao as $chave => $valor){
-			$valCampos .= $chave . '=? AND ';   
+		foreach($conditionArray as $key => $value){
+			$condValues .= $key . '=? AND ';   
 		}
 			 
-		$valCampos = (substr($valCampos, -4) == 'AND ') ? trim(substr($valCampos, 0, (strlen($valCampos) - 4))) : $valCampos ;    
+		$condValues = (substr($condValues, -4) == 'AND ') ? trim(substr($condValues, 0, (strlen($condValues) - 4))) : $condValues ;    
 			  
-		$sql .= "DELETE FROM {$this->tabela} WHERE " . $valCampos;   
+		$sql .= "DELETE FROM {$this->table} WHERE " . $condValues;   
 			 
 		return trim($sql);   
 	}  
 	
-	protected function select(array $fields = ['*'], array $conditions = [], $fetchAll = true){   
+	protected function select(array $fields = ['*'], array $conditions = [], bool $fetchAll = true){   
 		try {    
-		 $sql = $this->buildSelect($fields, $conditions);    
-		 $stm = $this->pdo->prepare($sql); 
-	
-		 $cont = 1;   	 
-		 foreach ($conditions as $value){
-			$stm->bindValue($cont, $value);   
-			$cont++;   
-		}
-	
-		$stm->execute(); 
-		 
-		if($fetchAll){ 
-			$data = $stm->fetchAll(PDO::FETCH_OBJ);   
-		}else {
-			$data = $stm->fetch(PDO::FETCH_OBJ);   
-		}
-	 
-		 return $data;   
+			$sql = $this->buildSelect($fields, $conditions);    
+			$stm = $this->pdo->prepare($sql); 
+		
+			$cont = 1;   	 
+			foreach ($conditions as $value){
+				$stm->bindValue($cont, $value);   
+				$cont++;   
+			}
+		
+			$stm->execute(); 
+			
+			if($fetchAll){ 
+				$data = $stm->fetchAll(PDO::FETCH_OBJ);   
+			}else {
+				$data = $stm->fetch(PDO::FETCH_OBJ);   
+			}
+		
+			return $data;   
 		} catch (PDOException $ex) {   
-		 echo "Exception: " . $ex->getMessage();  
+		 	echo "Exception: " . $ex->getMessage();  
 		} 
 	}    
 	 
-	protected function insert($arrayDados){   
+	protected function insert(array $dataArray){   
 	   	try {   
-			$sql = $this->buildInsert($arrayDados);   
+			$sql = $this->buildInsert($dataArray);   
 			$stm = $this->pdo->prepare($sql);   
 	
 			$cont = 1;   
-			foreach ($arrayDados as $valor){
-				$stm->bindValue($cont, $valor);   
+			foreach ($dataArray as $value){
+				$stm->bindValue($cont, $value);   
 				$cont++;   
 			}   
 	
-			$retorno = $stm->execute();   
-
-			return $retorno;   
+			return $stm->execute();     
 		} catch (PDOException $e) {   
-			echo "Erro: " . $e->getMessage();   
+			echo "Exception " . $e->getMessage();   
 		}   
 	}   
 	 
-	protected function update($arrayDados, $arrayCondicao){   
+	protected function update(array $dataArray, array $conditionArray){   
 	   	try {    
-			$sql = $this->buildUpdate($arrayDados, $arrayCondicao);    
+			$sql = $this->buildUpdate($dataArray, $conditionArray);    
 			$stm = $this->pdo->prepare($sql);   
 		
 			$cont = 1;   
-			foreach ($arrayDados as $valor) { 
-				$stm->bindValue($cont, $valor);   
+			foreach ($dataArray as $value) { 
+				$stm->bindValue($cont, $value);   
 				$cont++;   
 			}
 				
-			foreach ($arrayCondicao as $valor){
-				$stm->bindValue($cont, $valor);   
+			foreach ($conditionArray as $value){
+				$stm->bindValue($cont, $value);   
 				$cont++;   
 			}
 		
-			$retorno = $stm->execute();   
-		
-			return $retorno;   
+			return $stm->execute(); 
 	   	} catch (PDOException $e) {   
-			echo "Erro: " . $e->getMessage();   
+			echo "Exception: " . $e->getMessage();   
 		}   
 	}   
 	 
-	protected function delete($arrayCondicao){   
+	protected function delete(array $conditionArray){   
 	   	try {   
-			$sql = $this->buildDelete($arrayCondicao);   
+			$sql = $this->buildDelete($conditionArray);   
 			$stm = $this->pdo->prepare($sql);   
 		
 			$cont = 1;   
-			foreach ($arrayCondicao as $valor){
-				$stm->bindValue($cont, $valor);   
+			foreach ($conditionArray as $value){
+				$stm->bindValue($cont, $value);   
 				$cont++;   
 			} 
 		
-			$retorno = $stm->execute();   
-		
-			return $retorno;   
+			return $stm->execute();   
 		} catch (PDOException $e) {   
-			echo "Erro: " . $e->getMessage();   
+			echo "Exception: " . $e->getMessage();   
 		}   
 	}   
    
-	protected function getSQLGeneric($sql, $arrayParams=null, $fetchAll=TRUE){  
+	protected function getSQLGeneric(string $sql, array $arrayParams=null, bool $fetchAll=TRUE){  
 	   	try {   
 			$stm = $this->pdo->prepare($sql);   
 		
 			if (!empty($arrayParams)){
 				$cont = 1;   
-				foreach ($arrayParams as $valor){
-					$stm->bindValue($cont, $valor);   
+				foreach ($arrayParams as $value){
+					$stm->bindValue($cont, $value);   
 					$cont++;   
 				}  
 			}   
@@ -190,14 +190,14 @@ class SqlDataBase{
 			$stm->execute();   
 
 			if($fetchAll){ 
-				$dados = $stm->fetchAll(PDO::FETCH_OBJ);   
+				$data = $stm->fetchAll(PDO::FETCH_OBJ);   
 			}else {
-				$dados = $stm->fetch(PDO::FETCH_OBJ);   
+				$data = $stm->fetch(PDO::FETCH_OBJ);   
 			}
 		
-			return $dados;   	
+			return $data;   	
 	   	} catch (PDOException $e) {   
-			echo "Erro: " . $e->getMessage();   
+			echo "Exception: " . $e->getMessage();   
 	   	}   
 	}   
   }  
